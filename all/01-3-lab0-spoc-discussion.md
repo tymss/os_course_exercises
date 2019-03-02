@@ -50,6 +50,8 @@
  };
 ```
 
+数字表示每个成员变量的位宽
+
 - 对于如下的代码段，
 
 ```
@@ -73,11 +75,23 @@ SETGATE(intr, 1,2,3,0);
 ```
 请问执行上述指令后， intr的值是多少？
 
+执行上述指令后，intr = 0x20003
+
 ### 课堂实践练习
 
 #### 练习一
 
 1. 请在ucore中找一段你认为难度适当的AT&T格式X86汇编代码，尝试解释其含义。
+   
+```asm
+seta20.1:
+    inb $0x64, %al                                  
+    testb $0x2, %al
+    jnz seta20.1
+    movb $0xd1, %al                                 
+    outb %al, $0x64                             
+```
+以上代码段的含义为，读取端口0x64的数据存入寄存器al中，将该数据与0x2比较，如果不同，则返回此代码段的开头，否则将0xd1输出到0x64端口。
 
 2. (option)请在rcore中找一段你认为难度适当的RV汇编代码，尝试解释其含义。
 
@@ -85,10 +99,31 @@ SETGATE(intr, 1,2,3,0);
 
 宏定义和引用在内核代码中很常用。请枚举ucore或rcore中宏定义的用途，并举例描述其含义。
 
+宏定义的用途有：
+1.定义常量，比如
+```C
+#define STA_X       0x8     // Executable segment
+#define STA_E       0x4     // Expand down (non-executable segments)
+#define STA_C       0x4     // Conforming code segment (executable only)
+```
+2.定义表达式，封装类似函数的操作，但效率高于函数，比如
+```C
+#define SEG_ASM(type,base,lim)                                  \
+    .word (((lim) >> 12) & 0xffff), ((base) & 0xffff);          \
+    .byte (((base) >> 16) & 0xff), (0x90 | (type)),             \
+        (0xC0 | (((lim) >> 28) & 0xf)), (((base) >> 24) & 0xff)
+```
+3.防止头文件被重复包含，比如
+```C
+#ifndef __BOOT_ASM_H__
+#define __BOOT_ASM_H__
+```
 
 ## 问答题
 
 #### 在配置实验环境时，你遇到了那些问题，是如何解决的。
+
+由于ubuntu的镜像源的问题，qemu的安装总是失败，更换了镜像源之后又出了一系列问题，最后用新的ubuntu16.04镜像重新装了一个虚拟机，然后依次安装必须的环境最后配置成功。
 
 ## 参考资料
  - [Intel格式和AT&T格式汇编区别](http://www.cnblogs.com/hdk1993/p/4820353.html)
