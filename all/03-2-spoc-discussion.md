@@ -119,7 +119,19 @@ PT6..0:页表的物理基址>>5
 在[物理内存模拟数据文件](./03-2-spoc-testdata.md)中，给出了4KB物理内存空间的值，请回答下列虚地址是否有合法对应的物理内存，请给出对应的pde index, pde contents, pte index, pte contents。
 ```
 1) Virtual Address 6c74
+
+Virtual Address 6C74:
+  --> pde index:0x1b  pde contents:(valid 1, pfn 0x20)
+    --> pte index:0x3  pte contents:(valid 1, pfn 0x61)
+      -->Translates to Physical Address 0xc34 --> Value: 0x6
+
    Virtual Address 6b22
+  
+Virtual Address 6B22:
+  --> pde index:0x1a  pde contents:(valid 1, pfn 0x52)
+    --> pte index:0x19  pte contents:(valid 1, pfn 0x47)
+      -->Translates to Physical Address 0x8e2 --> Value: 0x1a  
+   
 2) Virtual Address 03df
    Virtual Address 69dc
 3) Virtual Address 317a
